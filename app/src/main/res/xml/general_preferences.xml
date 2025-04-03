@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory android:title="Step Tracking">
+        <EditTextPreference
+            android:key="daily_step_goal"
+            android:title="Daily Step Goal"
+            android:summary="10000 steps"
+            android:defaultValue="10000" />
+            
+        <ListPreference
+            android:key="distance_unit"
+            android:title="Distance Unit"
+            android:summary="%s"
+            android:defaultValue="kilometers"
+            android:entries="@array/distance_unit_entries"
+            android:entryValues="@array/distance_unit_values" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Tracking Options">
+        <SwitchPreferenceCompat
+            android:key="auto_start_tracking"
+            android:title="Auto-start Tracking"
+            android:summary="Automatically start tracking steps when you open the app"
+            android:defaultValue="true" />
+            
+        <SwitchPreferenceCompat
+            android:key="background_tracking"
+            android:title="Background Tracking"
+            android:summary="Continue tracking steps even when the app is closed"
+            android:defaultValue="true" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

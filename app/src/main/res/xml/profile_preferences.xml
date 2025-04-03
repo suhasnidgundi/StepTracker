@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory android:title="Personal Information">
+        <EditTextPreference
+            android:key="display_name"
+            android:title="Display Name"
+            android:summary="Your name as shown in the app"
+            app:useSimpleSummaryProvider="true" />
+            
+        <Preference
+            android:key="email"
+            android:title="Email Address"
+            android:selectable="false" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Body Metrics">
+        <EditTextPreference
+            android:key="user_height"
+            android:title="Height"
+            android:summary="Your height in centimeters"
+            app:useSimpleSummaryProvider="true" />
+            
+        <EditTextPreference
+            android:key="user_weight"
+            android:title="Weight"
+            android:summary="Your weight in kilograms"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

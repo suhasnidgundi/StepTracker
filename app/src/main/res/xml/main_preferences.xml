@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <Preference
+        android:icon="@drawable/ic_person"
+        android:key="user_profile"
+        android:title="User Profile"
+        android:summary="Update your personal information"
+        app:fragment="com.svcp.steptracker.fragments.ProfileSettingsFragment" />
+
+    <Preference
+        android:icon="@drawable/ic_settings"
+        android:key="general_settings"
+        android:title="General Settings"
+        android:summary="Step goal, units, and app behavior"
+        app:fragment="com.svcp.steptracker.fragments.GeneralSettingsFragment" />
+
+    <Preference
+        android:icon="@drawable/ic_notifications"
+        android:key="notification_settings"
+        android:title="Notifications"
+        android:summary="Configure reminders and alerts"
+        app:fragment="com.svcp.steptracker.fragments.NotificationSettingsFragment" />
+
+    <Preference
+        android:icon="@drawable/ic_theme"
+        android:key="appearance_settings"
+        android:title="Appearance"
+        android:summary="Change app theme and display options"
+        app:fragment="com.svcp.steptracker.fragments.AppearanceSettingsFragment" />
+
+    <Preference
+        android:icon="@drawable/ic_account"
+        android:key="account_settings"
+        android:title="Account"
+        android:summary="Manage your account, password, and sign out"
+        app:fragment="com.svcp.steptracker.fragments.AccountSettingsFragment" />
+
+    <Preference
+        android:icon="@drawable/ic_info"
+        android:key="about_app"
+        android:title="About"
+        android:summary="App version, licenses, and privacy policy" />
+
+</PreferenceScreen>

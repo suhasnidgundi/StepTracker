@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        app:key="reminder_category"
+        app:title="Reminders">
+
+        <SwitchPreferenceCompat
+            app:key="daily_reminder"
+            app:title="Daily Activity Reminder"
+            app:summary="Get a reminder to track your daily activity"
+            app:icon="@drawable/ic_reminder"
+            app:defaultValue="true" />
+
+        <Preference
+            app:key="reminder_time"
+            app:title="Reminder Time"
+            app:icon="@drawable/ic_time"
+            app:summary="8:00 AM" />
+
+        <SwitchPreferenceCompat
+            app:key="inactivity_reminder"
+            app:title="Inactivity Reminder"
+            app:summary="Get reminders when you've been inactive for too long"
+            app:icon="@drawable/ic_inactive"
+            app:defaultValue="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:key="achievement_category"
+        app:title="Achievements">
+
+        <SwitchPreferenceCompat
+            app:key="goal_achievement"
+            app:title="Goal Achievement"
+            app:summary="Get notified when you reach your daily step goal"
+            app:icon="@drawable/ic_achievement"
+            app:defaultValue="true" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

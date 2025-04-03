@@ -63,4 +63,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+    // dependency for Preferences
+    implementation(libs.preference)
 }

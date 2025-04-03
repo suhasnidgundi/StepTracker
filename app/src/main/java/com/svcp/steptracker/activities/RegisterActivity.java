@@ -3,34 +3,30 @@ package com.svcp.steptracker.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.svcp.steptracker.R;
+import com.svcp.steptracker.utils.AuthManager;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
+    private static final String TAG = "RegisterActivity";
 
     private TextInputEditText nameField, emailField, passwordField, confirmPasswordField;
     private MaterialButton registerButton;
-    private FirebaseAuth mAuth;
-    private FirebaseFirestore db;
+    private AuthManager authManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        // Initialize Firebase Auth and Firestore
-        mAuth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
+        // Initialize AuthManager
+        authManager = new AuthManager(this);
 
         // Initialize UI elements
         nameField = findViewById(R.id.name);
@@ -83,53 +79,22 @@ public class RegisterActivity extends AppCompatActivity {
         registerButton.setEnabled(false);
         registerButton.setText("Creating account...");
 
-        // Create user with email and password
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        // Registration successful
-                        String userId = mAuth.getCurrentUser().getUid();
-
-                        // Store user profile information in Firestore
-                        Map<String, Object> user = new HashMap<>();
-                        user.put("name", name);
-                        user.put("email", email);
-                        user.put("createdAt", java.util.Calendar.getInstance().getTime());
-                        user.put("dailyGoal", 10000); // Default goal of 10,000 steps
-
-                        db.collection("users")
-                                .document(userId)
-                                .set(user)
-                                .addOnSuccessListener(aVoid -> {
-                                    Toast.makeText(RegisterActivity.this,
-                                            "Account created successfully", Toast.LENGTH_SHORT).show();
-
-                                    // Navigate to main activity
-                                    Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
-                                            Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    startActivity(intent);
-                                    finish();
-                                })
-                                .addOnFailureListener(e -> {
-                                    // If storing user data fails, still allow login but show warning
-                                    Toast.makeText(RegisterActivity.this,
-                                            "Account created, but profile setup failed. Please try again later.",
-                                            Toast.LENGTH_LONG).show();
-
-                                    Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
-                                    startActivity(intent);
-                                    finish();
-                                });
-                    } else {
-                        // If registration fails, display error message
-                        registerButton.setEnabled(true);
-                        registerButton.setText("Register");
-                        String errorMessage = task.getException().getMessage();
-                        Toast.makeText(RegisterActivity.this,
-                                "Registration failed: " + errorMessage,
-                                Toast.LENGTH_LONG).show();
-                    }
-                });
+        // Register the user
+        authManager.registerWithEmail(name, email, password, isSuccess -> {
+            registerButton.setEnabled(true);
+            registerButton.setText("Register");
+            
+            if (isSuccess) {
+                // Registration successful
+                Toast.makeText(RegisterActivity.this,
+                        "Account created successfully! Please check your email for verification.",
+                        Toast.LENGTH_LONG).show();
+                
+                // Return to login screen
+                finish();
+            } else {
+                // Registration failed, error is handled by AuthManager
+            }
+        });
     }
 }
