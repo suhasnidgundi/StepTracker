@@ -24,7 +24,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
 
-public class    DashboardFragment extends Fragment {
+public class DashboardFragment extends Fragment {
 
     private TextView stepsCountText;
     private TextView caloriesText;

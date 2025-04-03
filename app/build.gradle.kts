@@ -58,6 +58,7 @@ dependencies {
     // Step counter dependencies
     implementation(libs.play.services.fitness)
     implementation(libs.play.services.auth)
+    implementation(libs.swiperefreshlayout)
 
     // Testing
     testImplementation(libs.junit)
@@ -66,4 +67,8 @@ dependencies {
 
     // dependency for Preferences
     implementation(libs.preference)
+
+    // Glide for image loading
+    implementation(libs.glide)
+    annotationProcessor (libs.compiler)
 }

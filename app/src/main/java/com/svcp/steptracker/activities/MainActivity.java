@@ -79,19 +79,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             Fragment selectedFragment = null;
 
-            switch (item.getItemId()) {
-                case R.id.nav_dashboard:
-                    selectedFragment = new DashboardFragment();
-                    setTitle("Dashboard");
-                    break;
-                case R.id.nav_history:
-                    selectedFragment = new HistoryFragment();
-                    setTitle("History");
-                    break;
-                case R.id.nav_profile:
-                    selectedFragment = new ProfileFragment();
-                    setTitle("Profile");
-                    break;
+            // Replace the switch statement with if-else statements
+            if (item.getItemId() == R.id.nav_dashboard) {
+                selectedFragment = new DashboardFragment();
+                setTitle("Dashboard");
+            } else if (item.getItemId() == R.id.nav_history) {
+                selectedFragment = new HistoryFragment();
+                setTitle("History");
+            } else if (item.getItemId() == R.id.nav_profile) {
+                selectedFragment = new ProfileFragment();
+                setTitle("Profile");
             }
 
             if (selectedFragment != null) {
