@@ -1,29 +1,27 @@
 package com.svcp.steptracker.adapters;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.svcp.steptracker.R;
-import com.svcp.steptracker.models.DailySteps;
-import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.svcp.steptracker.models.StepHistoryItem;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 public class StepHistoryAdapter extends RecyclerView.Adapter<StepHistoryAdapter.ViewHolder> {
 
-    private static final int DAILY_GOAL = 10000;
-    private List<DailySteps> stepsList;
+    private List<StepHistoryItem> historyItems;
+    private static final int GOAL = 10000; // Default goal
 
-    public StepHistoryAdapter(List<DailySteps> stepsList) {
-        this.stepsList = stepsList;
+    public StepHistoryAdapter(List<StepHistoryItem> historyItems) {
+        this.historyItems = historyItems;
     }
 
     @NonNull
@@ -36,44 +34,36 @@ public class StepHistoryAdapter extends RecyclerView.Adapter<StepHistoryAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        DailySteps dailySteps = stepsList.get(position);
-
-        // Format date for display
-        try {
-            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            SimpleDateFormat outputFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-            Date date = inputFormat.parse(dailySteps.getDate());
-            holder.dateText.setText(outputFormat.format(date));
-        } catch (ParseException e) {
-            holder.dateText.setText(dailySteps.getDate());
-        }
-
-        holder.stepsText.setText(String.valueOf(dailySteps.getStepCount()) + " steps");
-
-        // Update progress bar
-        holder.progressBar.setMax(DAILY_GOAL);
-        holder.progressBar.setProgress(dailySteps.getStepCount());
+        StepHistoryItem item = historyItems.get(position);
+        
+        holder.dateText.setText(item.getDate());
+        holder.stepsText.setText(String.format(Locale.getDefault(), "%d steps", item.getSteps()));
+        holder.distanceText.setText(String.format(Locale.getDefault(), "%.1f km", item.getDistance()));
+        holder.caloriesText.setText(String.format(Locale.getDefault(), "%.1f kcal", item.getCalories()));
+        
+        // Calculate progress percentage
+        int progress = (int) (((float) item.getSteps() / GOAL) * 100);
+        holder.progressBar.setProgress(progress);
     }
 
     @Override
     public int getItemCount() {
-        return stepsList.size();
-    }
-
-    public void updateData(List<DailySteps> newData) {
-        this.stepsList = newData;
-        notifyDataSetChanged();
+        return historyItems.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView dateText;
         TextView stepsText;
-        LinearProgressIndicator progressBar;
+        TextView distanceText;
+        TextView caloriesText;
+        ProgressBar progressBar;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             dateText = itemView.findViewById(R.id.date_text);
             stepsText = itemView.findViewById(R.id.steps_text);
+            distanceText = itemView.findViewById(R.id.distance_text);
+            caloriesText = itemView.findViewById(R.id.calories_text);
             progressBar = itemView.findViewById(R.id.progress_bar);
         }
     }

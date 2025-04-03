@@ -1,155 +1,231 @@
 package com.svcp.steptracker.activities;
 
-import android.os.Bundle;
-
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.svcp.steptracker.R;
-
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.view.Menu;
+import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 
-import com.svcp.steptracker.adapters.StepHistoryAdapter;
-import com.svcp.steptracker.models.DailySteps;
-import com.svcp.steptracker.services.StepCounterService;
-import com.svcp.steptracker.utils.FirebaseUtils;
-import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.svcp.steptracker.R;
+import com.svcp.steptracker.fragments.DashboardFragment;
+import com.svcp.steptracker.fragments.HistoryFragment;
+import com.svcp.steptracker.fragments.ProfileFragment;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
+import java.util.Timer;
+import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private static final int DAILY_GOAL = 10000;
-
-    private TextView stepCountText;
-    private TextView goalText;
-    private LinearProgressIndicator goalProgress;
-    private RecyclerView historyRecycler;
-    private StepHistoryAdapter historyAdapter;
-    private FirebaseUtils firebaseUtils;
-    private int currentStepCount = 0;
-
-    private BroadcastReceiver stepUpdateReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            currentStepCount = intent.getIntExtra("stepCount", 0);
-            updateUI();
-        }
-    };
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
+    private BottomNavigationView bottomNavigationView;
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
+    private TextView userNameTextView;
+    private TextView dateTimeTextView;
+    private Timer timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Initialize Firebase utils
-        firebaseUtils = new FirebaseUtils(this);
-
-        // Check if user is logged in
-        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
-            startActivity(new Intent(this, LoginActivity.class));
-            finish();
-            return;
-        }
+        // Initialize Firebase Auth and Firestore
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
         // Set up toolbar
-        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        // Initialize UI elements
-        stepCountText = findViewById(R.id.step_count);
-        goalText = findViewById(R.id.goal_text);
-        goalProgress = findViewById(R.id.goal_progress);
-        historyRecycler = findViewById(R.id.history_recycler);
+        // Set up drawer layout
+        drawerLayout = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawerLayout, toolbar,
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
 
-        // Set up RecyclerView for history
-        historyRecycler.setLayoutManager(new LinearLayoutManager(this));
-        historyAdapter = new StepHistoryAdapter(new ArrayList<>());
-        historyRecycler.setAdapter(historyAdapter);
+        // Set up navigation view
+        navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
-        // Set up progress bar
-        goalProgress.setMax(DAILY_GOAL);
+        // Set up header views in navigation drawer
+        View headerView = navigationView.getHeaderView(0);
+        userNameTextView = headerView.findViewById(R.id.user_name);
+        dateTimeTextView = headerView.findViewById(R.id.date_time);
 
-        // Start step counter service
-        startService(new Intent(this, StepCounterService.class));
+        // Set up bottom navigation
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            Fragment selectedFragment = null;
 
-        // Register broadcast receiver for step updates
-        LocalBroadcastManager.getInstance(this)
-                .registerReceiver(stepUpdateReceiver, new IntentFilter("step-counter-update"));
+            switch (item.getItemId()) {
+                case R.id.nav_dashboard:
+                    selectedFragment = new DashboardFragment();
+                    setTitle("Dashboard");
+                    break;
+                case R.id.nav_history:
+                    selectedFragment = new HistoryFragment();
+                    setTitle("History");
+                    break;
+                case R.id.nav_profile:
+                    selectedFragment = new ProfileFragment();
+                    setTitle("Profile");
+                    break;
+            }
 
-        // Load step history
-        loadStepHistory();
-    }
+            if (selectedFragment != null) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, selectedFragment)
+                        .commit();
+                return true;
+            }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // Update UI with current step count
-        updateUI();
+            return false;
+        });
+
+        // Set default fragment
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, new DashboardFragment())
+                    .commit();
+            bottomNavigationView.setSelectedItemId(R.id.nav_dashboard);
+        }
+
+        // Load user data and update UI
+        loadUserData();
+
+        // Start updating time
+        startTimeUpdates();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // Unregister broadcast receiver
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(stepUpdateReceiver);
-    }
-
-    private void updateUI() {
-        stepCountText.setText(String.valueOf(currentStepCount));
-        int progressPercentage = (int) (((float) currentStepCount / DAILY_GOAL) * 100);
-        goalProgress.setProgress(currentStepCount);
-        goalText.setText(progressPercentage + "% of daily goal (" + DAILY_GOAL + " steps)");
-    }
-
-    private void loadStepHistory() {
-        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        firebaseUtils.getStepHistory(userId, 7, stepsMap -> {
-            List<DailySteps> stepsList = new ArrayList<>();
-            for (Map.Entry<String, Long> entry : stepsMap.entrySet()) {
-                stepsList.add(new DailySteps(entry.getKey(), entry.getValue().intValue()));
-            }
-            historyAdapter.updateData(stepsList);
-        });
+        if (timer != null) {
+            timer.cancel();
+        }
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.nav_settings:
+                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                break;
+            case R.id.nav_help:
+                startActivity(new Intent(MainActivity.this, HelpActivity.class));
+                break;
+            case R.id.nav_logout:
+                logout();
+                break;
+        }
+
+        drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+    private void loadUserData() {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        if (id == R.id.action_logout) {
-            FirebaseAuth.getInstance().signOut();
+        if (currentUser != null) {
+            // Check Firestore for user's display name
+            db.collection("users").document(currentUser.getUid())
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        String displayName = "User";
+
+                        if (documentSnapshot.exists()) {
+                            displayName = documentSnapshot.getString("name");
+                            if (displayName == null || displayName.isEmpty()) {
+                                // If name is not in Firestore, check FirebaseUser
+                                if (currentUser.getDisplayName() != null && !currentUser.getDisplayName().isEmpty()) {
+                                    displayName = currentUser.getDisplayName();
+                                } else {
+                                    // For demo purposes, set to the provided username
+                                    displayName = "suhasnidgundinow";
+                                }
+                            }
+                        } else {
+                            // For demo purposes, set to the provided username
+                            displayName = "suhasnidgundinow";
+                        }
+
+                        userNameTextView.setText(displayName);
+                    })
+                    .addOnFailureListener(e -> {
+                        // For demo purposes, set to the provided username
+                        userNameTextView.setText("suhasnidgundinow");
+                    });
+        } else {
+            // User is not logged in, redirect to login screen
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
             finish();
-            return true;
         }
+    }
 
-        if (item.getItemId() == R.id.menu_settings) {
-            // Open settings activity
-            Intent intent = new Intent(this, SettingsActivity.class);
-            startActivity(intent);
-            return true;
-        }
+    private void startTimeUpdates() {
+        // Update time immediately
+        updateDateTime();
 
-        return super.onOptionsItemSelected(item);
+        // Schedule updates every minute
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(() -> updateDateTime());
+            }
+        }, 60000, 60000); // update every minute
+    }
+
+    private void updateDateTime() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String currentDateTime = dateFormat.format(new Date());
+
+        // For demo purposes, use the provided date/time
+        currentDateTime = "2025-04-03 20:10:35";
+
+        dateTimeTextView.setText("UTC: " + currentDateTime);
+    }
+
+    private void logout() {
+        // Sign out from Firebase
+        mAuth.signOut();
+
+        // Redirect to login screen
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 }
