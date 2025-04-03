@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "163155009090",
+    "project_id": "steptracker-01",
+    "storage_bucket": "steptracker-01.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:163155009090:android:43f909274014b86658d7db",
+        "android_client_info": {
+          "package_name": "com.svcp.steptracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZb5bsXfylCIuetOHrHbwfxd7GWkNJKT0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
