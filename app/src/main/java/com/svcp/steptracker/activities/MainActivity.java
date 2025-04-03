@@ -19,7 +19,6 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.svcp.steptracker.R;
 import com.svcp.steptracker.fragments.DashboardFragment;
 import com.svcp.steptracker.fragments.HistoryFragment;
@@ -135,16 +134,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.nav_settings:
-                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-                break;
-            case R.id.nav_help:
-                startActivity(new Intent(MainActivity.this, HelpActivity.class));
-                break;
-            case R.id.nav_logout:
-                logout();
-                break;
+        int id = item.getItemId();
+
+        if (id == R.id.nav_settings) {
+            startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+        } else if (id == R.id.nav_help) {
+            startActivity(new Intent(MainActivity.this, HelpActivity.class));
+        } else if (id == R.id.nav_logout) {
+            logout();
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);

@@ -40,14 +40,15 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.material)
     implementation(libs.activity)
+    implementation (libs.gridlayout)
 
     // multidex support
-    implementation("androidx.multidex:multidex:2.0.1")
+    implementation(libs.multidex)
 
     // Firebase dependencies - use Firebase BOM to manage versions
     implementation(platform(libs.firebase.bom))
-    implementation("com.google.firebase:firebase-auth")
-    implementation("com.google.firebase:firebase-firestore")
+    implementation(libs.com.google.firebase.firebase.auth)
+    implementation(libs.com.google.firebase.firebase.firestore)
     implementation(libs.firebase.analytics)
 
     // Authentication and credentials
@@ -59,6 +60,7 @@ dependencies {
     implementation(libs.play.services.fitness)
     implementation(libs.play.services.auth)
     implementation(libs.swiperefreshlayout)
+    implementation(libs.firebase.storage)
 
     // Testing
     testImplementation(libs.junit)

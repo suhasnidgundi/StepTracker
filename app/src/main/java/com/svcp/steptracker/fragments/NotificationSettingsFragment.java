@@ -7,9 +7,9 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreferenceCompat;
 
-import com.svcp.steptracker.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.svcp.steptracker.R;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -12,8 +12,8 @@ import android.os.IBinder;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.svcp.steptracker.utils.FirebaseUtils;
 import com.google.firebase.auth.FirebaseAuth;
+import com.svcp.steptracker.utils.FirebaseUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

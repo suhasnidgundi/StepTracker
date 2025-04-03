@@ -1,10 +1,8 @@
 package com.svcp.steptracker.activities;
 
 import android.animation.ValueAnimator;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;

@@ -4,16 +4,15 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
-import com.svcp.steptracker.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.svcp.steptracker.R;
 
 public class ProfileSettingsFragment extends PreferenceFragmentCompat {
 

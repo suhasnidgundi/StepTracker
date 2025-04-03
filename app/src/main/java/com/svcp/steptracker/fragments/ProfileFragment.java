@@ -15,8 +15,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,10 +28,7 @@ import com.svcp.steptracker.R;
 import com.svcp.steptracker.activities.LoginActivity;
 import com.svcp.steptracker.activities.SettingsActivity;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
-import java.util.Random;
 
 public class ProfileFragment extends Fragment {
 
